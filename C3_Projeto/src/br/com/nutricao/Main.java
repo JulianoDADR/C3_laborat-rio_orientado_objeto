@@ -1,11 +1,13 @@
-
+// Main.java
 // Coloque na pasta: src/br/com/nutricao/
+
 package br.com.nutricao;
 
 import br.com.nutricao.model.*;
 import br.com.nutricao.service.*;
 import br.com.nutricao.enums.*;
 import br.com.nutricao.exception.*;
+import br.com.nutricao.util.GerenciadorCSV;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -34,6 +36,7 @@ public class Main {
                     case 4 -> criarPlanoAlimentar();
                     case 5 -> listarAlimentos();
                     case 6 -> testarExcecoes();
+                    case 7 -> exportarParaCSV();
                     case 0 -> {
                         System.out.println("Saindo...");
                         rodando = false;
@@ -58,6 +61,7 @@ public class Main {
         System.out.println("4. Criar Plano Alimentar");
         System.out.println("5. Listar Alimentos");
         System.out.println("6. Testar Exceções");
+        System.out.println("7. Exportar Dados para CSV");
         System.out.println("0. Sair");
         System.out.print("Escolha: ");
     }
@@ -262,5 +266,26 @@ public class Main {
         System.out.println("   ✓ IMC calculado via interface: " + String.format("%.2f", imc));
         
         System.out.println("\n✓ Todos os testes de exceção passaram!");
+    }
+    
+    private static void exportarParaCSV() {
+        System.out.println("\n--- EXPORTAR DADOS PARA CSV ---");
+        
+        System.out.print("Nome da pasta de destino (ex: dados_exportados): ");
+        String pasta = scanner.nextLine();
+        
+        try {
+            GerenciadorCSV.exportarTodosSistema(
+                pacienteService.listarAtivos(),
+                avaliacaoService.buscarPorPaciente(1L), // exemplo
+                alimentoService.listar(),
+                java.util.Collections.emptyList(), // planos
+                java.util.Collections.emptyList(), // diário
+                java.util.Collections.emptyList(), // anamneses
+                pasta
+            );
+        } catch (Exception e) {
+            System.out.println("Erro ao exportar: " + e.getMessage());
+        }
     }
 }
